@@ -14,6 +14,17 @@ data L = V Var | Neg L | Bin L BC L
 data BC = And | Or | Imp | If
   deriving (Show, Eq)
   
+p :: L 
+p = (V "p")
+
+q :: L 
+q = (V "q")
+
+r :: L 
+r = (V "r")
+
+s :: L 
+s = (V "s")
   
 -- EJERCICIO 1.2 --
 --a)
