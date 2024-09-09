@@ -14,6 +14,17 @@ data L = V Var | Neg L | Bin L BC L
 data BC = And | Or | Imp | If
   deriving (Show, Eq)
   
+p :: L 
+p = (V "p")
+
+q :: L 
+q = (V "q")
+
+r :: L 
+r = (V "r")
+
+s :: L 
+s = (V "s")
   
 -- EJERCICIO 1.2 --
 --a)
@@ -46,7 +57,10 @@ valores (Bin l1 bc l2) = valores l1 ++ valores l2
 
 --c)
 dobleNeg :: L -> L
-dobleNeg = undefined
+dobleNeg (V x) = (V x)
+dobleNeg (Neg (V y)) = (Neg (V y))
+dobleNeg (Neg (Neg l)) = l
+dobleNeg (Bin l1 bc l2) = (Bin (dobleNeg l1) bc (dobleNeg l2))
 
 --d)
 cambiar :: L -> L
