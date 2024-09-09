@@ -18,16 +18,16 @@ data BC = And | Or | Imp | If
 -- EJERCICIO 1.2 --
 --a)
 fa :: L
-fa = undefined
+fa = Bin (V "p") And (Neg (Neg (V "q")))
 --b)
 fb :: L
-fb = undefined
+fb = Bin (V "p") And (Bin (Neg (V "q")) And (Neg (V "r")))
 --c)
 fc :: L
-fc = undefined
+fc = Bin (Neg (Neg (V "p"))) Or (Neg (Bin (V "q") And (V "p")))
 --d)
 fd :: L
-fd = undefined
+fd = Bin (Neg (Bin (V "r") Imp (V "r"))) And (Bin (Neg (Neg (V "p"))) Or (Neg (Bin (V "q") And (V "p"))))
 
 
 -- EJERCICIO 1.3 --
@@ -42,7 +42,7 @@ valores :: L -> [(Var,Bool)]
 valores (V x) = [(x, True)]
 valores (Neg (V y)) = [(y, False)]
 valores (Neg l) = valores l
-valores (Bin l1 bc l2) = (valores l1) ++ (valores l2)
+valores (Bin l1 bc l2) = valores l1 ++ valores l2
 
 --c)
 dobleNeg :: L -> L
