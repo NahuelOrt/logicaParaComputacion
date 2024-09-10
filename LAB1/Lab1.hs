@@ -113,7 +113,10 @@ swapCon (Bin l1 bc l2) b1 b2
 
 --i)
 invertir :: L -> L
-invertir = undefined
+invertir (V x) = (Neg (V x))
+invertir (Neg (V x)) = (V x)
+invertir (Neg l) = dobleNeg (Neg (invertir l))
+invertir (Bin l1 bc l2) = swapCon (Bin (invertir (swapCon l1 And Or)) bc (invertir (swapCon l2 And Or))) And Or
 
 --j)
 sustSimp :: Var -> L -> L -> L
