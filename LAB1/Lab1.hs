@@ -83,10 +83,12 @@ listarProp (V x) = [x]
 listarProp (Neg l) = listarProp l 
 listarProp (Bin l1 bc l2) = concatSinRep (listarProp l1) (listarProp l2)
 
+--f - aux 1)
 concatSinRep :: [Var] -> [Var] -> [Var]
 concatSinRep list1 [] = list1
 concatSinRep list1 (y:ys) = concatSinRep (agregarVarNoRep list1 y) ys
 
+--f - aux 2)
 agregarVarNoRep :: [Var] -> Var -> [Var]
 agregarVarNoRep [] y = [y]
 agregarVarNoRep (x:xs) y 
