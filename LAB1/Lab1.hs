@@ -71,15 +71,36 @@ cambiar (Bin m1 bc m2) = (Bin (cambiar m1) bc (cambiar m2))
 
 --e)
 cantPropX :: L -> Var -> Int
-cantPropX = undefined
+cantPropX (V x) y
+    | x == y = 1
+    | otherwise = 0
+cantPropX (Neg l) y = cantPropX l y
+cantPropX (Bin l1 bc l2) y = (cantPropX l1 y) + (cantPropX l2 y)
 
 --f)
 listarProp :: L -> [Var]
-listarProp = undefined
+listarProp (V x) = [x]
+listarProp (Neg l) = listarProp l 
+listarProp (Bin l1 bc l2) = concatSinRep (listarProp l1) (listarProp l2)
+
+concatSinRep :: [Var] -> [Var] -> [Var]
+concatSinRep list1 [] = list1
+concatSinRep list1 (y:ys) = concatSinRep (agregarVarNoRep list1 y) ys
+
+agregarVarNoRep :: [Var] -> Var -> [Var]
+agregarVarNoRep [] y = [y]
+agregarVarNoRep (x:xs) y 
+      | x == y = x:xs
+      | otherwise = x : agregarVarNoRep xs y
 
 --g)
 sustCon :: L -> BC -> BC -> L
-sustCon = undefined
+sustCon (V x) b1 b2 = (V x)
+sustCon (Neg l) b1 b2 = Neg (sustCon l b1 b2)
+sustCon (Bin l1 bc l2) b1 b2
+      | bc == b1 = Bin (sustCon l1 b1 b2) b2 (sustCon l2 b1 b2)
+      | otherwise = Bin (sustCon l1 b1 b2) bc (sustCon l2 b1 b2)
+
 
 --h)
 swapCon :: L -> BC -> BC -> L
