@@ -128,4 +128,11 @@ sustSimp x l1 (Bin l2 bc l3) = Bin (sustSimp x l1 l2) bc (sustSimp x l1 l3)
 
 --k)
 sustMult :: [(Var, L)] -> L -> L
-sustMult = undefined
+sustMult [] (V y) = (V y)
+sustMult ((x, l1):xs) (V y)
+      | x == y = l1
+      | otherwise = sustMult xs (V y)
+sustMult [] (Neg l) = (Neg l)
+sustMult list (Neg l) = Neg (sustMult list l)
+sustMult [] (Bin l1 bc l2) = (Bin l1 bc l2)
+sustMult list (Bin l1 bc l2) = Bin (sustMult list l1) bc (sustMult list l2)
