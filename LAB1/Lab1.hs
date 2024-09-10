@@ -64,7 +64,10 @@ dobleNeg (Bin l1 bc l2) = (Bin (dobleNeg l1) bc (dobleNeg l2))
 
 --d)
 cambiar :: L -> L
-cambiar = undefined
+cambiar (V x) = (V x)
+cambiar (Neg l) = (Neg (cambiar l))
+cambiar (Bin l1 Or l2) = (Bin (Neg (cambiar l1)) Imp (cambiar l2))
+cambiar (Bin m1 bc m2) = (Bin (cambiar m1) bc (cambiar m2))
 
 --e)
 cantPropX :: L -> Var -> Int
