@@ -104,7 +104,12 @@ sustCon (Bin l1 bc l2) b1 b2
 
 --h)
 swapCon :: L -> BC -> BC -> L
-swapCon = undefined
+swapCon (V x) b1 b2 = (V x)
+swapCon (Neg l) b1 b2 = Neg (swapCon l b1 b2)
+swapCon (Bin l1 bc l2) b1 b2
+      | bc == b1 = Bin (swapCon l1 b1 b2) b2 (swapCon l2 b1 b2)
+      | bc == b2 = Bin (swapCon l1 b1 b2) b1 (swapCon l2 b1 b2)
+      | otherwise = Bin (sustCon l1 b1 b2) bc (sustCon l2 b1 b2)
 
 --i)
 invertir :: L -> L
