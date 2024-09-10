@@ -145,7 +145,7 @@ sustMultTests = [TestLabel "sustMult 1" form1_sustMult_test,
 
 
 -- Todas las pruebas 
-allTests = TestList $ dobleNegTests  ++ cantPropXTests ++ listarPropTests ++ swapConTests ++ invertirTests ++ sustConTests ++ sustSimpTests ++ sustMultTests 
+allTests = TestList $ cantBinTests ++ cambiarTests ++ valoresTests ++ dobleNegTests  ++ cantPropXTests ++ listarPropTests ++ swapConTests ++ invertirTests ++ sustConTests ++ sustSimpTests ++ sustMultTests 
 -- Formulas
 
 form1 = p 
