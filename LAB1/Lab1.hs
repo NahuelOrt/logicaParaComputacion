@@ -72,8 +72,8 @@ cambiar (Bin m1 bc m2) = (Bin (cambiar m1) bc (cambiar m2))
 --e)
 cantPropX :: L -> Var -> Int
 cantPropX (V x) y
-    | x == y = 1
-    | otherwise = 0
+      | x == y = 1
+      | otherwise = 0
 cantPropX (Neg l) y = cantPropX l y
 cantPropX (Bin l1 bc l2) y = (cantPropX l1 y) + (cantPropX l2 y)
 
@@ -120,7 +120,11 @@ invertir (Bin l1 bc l2) = swapCon (Bin (invertir (swapCon l1 And Or)) bc (invert
 
 --j)
 sustSimp :: Var -> L -> L -> L
-sustSimp = undefined
+sustSimp x l1 (V y)
+      | x == y = l1
+      | otherwise = (V y)
+sustSimp x l1 (Neg l2) = (Neg (sustSimp x l1 l2))
+sustSimp x l1 (Bin l2 bc l3) = Bin (sustSimp x l1 l2) bc (sustSimp x l1 l3)
 
 --k)
 sustMult :: [(Var, L)] -> L -> L
