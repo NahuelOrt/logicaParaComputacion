@@ -28,34 +28,44 @@ fd :: L
 fd = Bin (Neg (Bin r Imp r)) And fc            -- ¬(r ⊃ r) ∧ (¬¬p ∨ ¬(q ∧ p))
 
 
+
+
 -- EJERCICIO 1 --
 --1.1)
 eval :: (Var -> Bool) -> L -> Bool
-eval = undefined
+eval i (V x) = i x
+eval i (Neg l) = not (eval i l)
+eval i (Bin l1 bc l2) 
+      | bc == And = (eval i l1) && (eval i l2)
+      | bc == Or = (eval i l1) || (eval i l2)
+      | bc == Imp = (eval i (Neg l1)) || (eval i l2)
+      | bc == Iff = (eval i l1) == (eval i l2)
 
 --1.2)
 itodasverdaderas ::  Var -> Bool
-itodasverdaderas = undefined
+itodasverdaderas _ = True
 
 --1.3)
 itodasfalsas :: Var -> Bool
-itodasfalsas = undefined
+itodasfalsas _ = False
 
 --1.4)
 irfalsa :: Var -> Bool
-irfalsa = undefined 
+irfalsa x
+      | x == "r" = False
+      | otherwise = True
 
 --1.5)
 -- Completar con verdadera/falsa:
--- fa es ... bajo itodasfalsas
--- fb es ... bajo itodasfalsas
--- fc es ... bajo itodasfalsas
--- fd es ... bajo itodasfalsas
+-- fa es False bajo itodasfalsas
+-- fb es False bajo itodasfalsas
+-- fc es True bajo itodasfalsas
+-- fd es False bajo itodasfalsas
 -- 
--- fa es ... bajo itodasverdaderas
--- fb es ... bajo itodasverdaderas
--- fc es ... bajo itodasverdaderas
--- fd es ... bajo itodasverdaderas
+-- fa es True bajo itodasverdaderas
+-- fb es False bajo itodasverdaderas
+-- fc es True bajo itodasverdaderas
+-- fd es False bajo itodasverdaderas
 --
 -- fa es ... bajo irfalsa
 -- fb es ... bajo irfalsa
@@ -64,7 +74,9 @@ irfalsa = undefined
 
 --1.6)
 creari :: [(Var, Bool)] -> (Var -> Bool)
-creari = undefined
+creari ((v,b):is) x
+          | x == v = b
+          | otherwise = creari is x
 
 --1.7)
 -- Responder aquí.
