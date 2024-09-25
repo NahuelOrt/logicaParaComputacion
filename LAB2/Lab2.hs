@@ -57,15 +57,15 @@ irfalsa x
 
 --1.5)
 -- Completar con verdadera/falsa:
--- fa es ... bajo itodasfalsas
--- fb es ... bajo itodasfalsas
--- fc es ... bajo itodasfalsas
--- fd es ... bajo itodasfalsas
+-- fa es False bajo itodasfalsas
+-- fb es False bajo itodasfalsas
+-- fc es True bajo itodasfalsas
+-- fd es False bajo itodasfalsas
 -- 
--- fa es ... bajo itodasverdaderas
--- fb es ... bajo itodasverdaderas
--- fc es ... bajo itodasverdaderas
--- fd es ... bajo itodasverdaderas
+-- fa es True bajo itodasverdaderas
+-- fb es False bajo itodasverdaderas
+-- fc es True bajo itodasverdaderas
+-- fd es False bajo itodasverdaderas
 --
 -- fa es ... bajo irfalsa
 -- fb es ... bajo irfalsa
