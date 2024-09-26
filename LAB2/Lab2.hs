@@ -124,9 +124,18 @@ agregarVarNoRep (x:xs) y
       | otherwise = x : agregarVarNoRep xs y
 
 
---2.3)
+--2.3) -- Tau | Contra | Cont | Sat | Fal
 es :: L -> Clase -> Bool
-es = undefined
+es l Tau = esTau (tv l)
+es l Contra = esContra (tv l)
+
+esTau :: TV -> Bool
+esTau [] = True
+esTau ((f,b):xs) = b && esTau xs
+
+esContra :: TV -> Bool
+esContra [] = True
+esContra ((f,b):xs) = (not b) && esContra xs
 
 --2.4)
 -- Completar con tautología/contingencia/contradicción:
