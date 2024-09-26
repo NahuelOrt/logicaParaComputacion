@@ -1,7 +1,7 @@
 module Lab2 where
 ------------------- Estudiante/s -------------------
--- Nombres y apellidos: 
--- Números: 
+-- Nombres y apellidos: Nahuel Pereyra
+-- Números: 254438
 ----------------------------------------------------
 
 import Prelude
@@ -100,7 +100,29 @@ filas (v:vs) = [[(v,b)] ++ rs | b <- [False, True], rs <- filas vs]
 
 --2.2)
 tv :: L -> TV
-tv = undefined
+--tv l = (filas (listarProp (l)))
+tv l = [(f, eval (creari(f)) l) | f <- filas (listarProp (l))]
+
+--Este es el ejercicio f de Lab1 (Lista las prop de L sin repeticiones.)
+listarProp :: L -> [Var]
+listarProp (V x) = [x]
+listarProp (Neg l) = listarProp l 
+listarProp (Bin l1 bc l2) = concatSinRep (listarProp l1) (listarProp l2)
+
+--Esta es una funcion aux del ej f del Lab1
+--f - aux 1)
+concatSinRep :: [Var] -> [Var] -> [Var]
+concatSinRep list1 [] = list1
+concatSinRep list1 (y:ys) = concatSinRep (agregarVarNoRep list1 y) ys
+
+--Esta es una funcion aux del ej f del Lab1
+--f - aux 2)
+agregarVarNoRep :: [Var] -> Var -> [Var]
+agregarVarNoRep [] y = [y]
+agregarVarNoRep (x:xs) y 
+      | x == y = x:xs
+      | otherwise = x : agregarVarNoRep xs y
+
 
 --2.3)
 es :: L -> Clase -> Bool
