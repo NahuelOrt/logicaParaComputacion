@@ -57,20 +57,20 @@ irfalsa x
 
 --1.5)
 -- Completar con verdadera/falsa:
--- fa es False bajo itodasfalsas
+-- fa es False bajo itodasfalsas           eval itodasfalsas fx
 -- fb es False bajo itodasfalsas
 -- fc es True bajo itodasfalsas
 -- fd es False bajo itodasfalsas
 -- 
--- fa es True bajo itodasverdaderas
+-- fa es True bajo itodasverdaderas        eval itodasverdaderas fx
 -- fb es False bajo itodasverdaderas
 -- fc es True bajo itodasverdaderas
 -- fd es False bajo itodasverdaderas
 --
--- fa es ... bajo irfalsa
--- fb es ... bajo irfalsa
--- fc es ... bajo irfalsa
--- fd es ... bajo irfalsa
+-- fa es True bajo irfalsa                 eval irfalsa fx
+-- fb es False bajo irfalsa
+-- fc es True bajo irfalsa
+-- fd es False bajo irfalsa
 
 --1.6)
 creari :: [(Var, Bool)] -> (Var -> Bool)
@@ -79,7 +79,12 @@ creari ((v,b):is) x
           | otherwise = creari is x
 
 --1.7)
--- Responder aquí.
+-- Creo que no es igual a la interpretación del punto 4 ya que irfalsa comprende mucho mas 
+-- que r, p y q. Es decir que si tenemos en cuenta alguna variable mas que no esté en esta
+-- lista, puede ser False. Es decir que deja abierta la opcion de por ejemplo un (s, False).
+-- Si en creari agregaramos un caso base para cuando is = [], entonces dependería de este,
+-- es decir, si fuera creari [] _ = True, si podriamos afirmar la igualdad, y si fuera de
+-- la forma creari [] _ = False podriamos afirmar la desigualdad.
 
 
 -- EJERCICIO 2 --
@@ -90,7 +95,8 @@ data Clase = Tau | Contra | Cont | Sat | Fal
 
 --2.1)
 filas :: [Var] -> [Fila]
-filas = undefined
+filas [] = [[]]
+filas (v:vs) = [[(v,b)] ++ rs | b <- [False, True], rs <- filas vs]
 
 --2.2)
 tv :: L -> TV
