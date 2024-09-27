@@ -100,7 +100,6 @@ filas (v:vs) = [[(v,b)] ++ rs | b <- [False, True], rs <- filas vs]
 
 --2.2)
 tv :: L -> TV
---tv l = (filas (listarProp (l)))
 tv l = [(f, eval (creari(f)) l) | f <- filas (listarProp (l))]
 
 --Este es el ejercicio f de Lab1 (Lista las prop de L sin repeticiones.)
@@ -127,23 +126,28 @@ agregarVarNoRep (x:xs) y
 --2.3) -- Tau | Contra | Cont | Sat | Fal
 es :: L -> Clase -> Bool
 es l Tau = esTau (tv l)
-es l Contra = esContraOFal (tv l)
-es l Cont = (not (esTau (tv l))) && (not (esContraOFal (tv l)))
-es l Sat = not (esContraOFal (tv l))
+es l Contra = esContra (tv l)
+es l Cont = (not (esTau (tv l))) && (not (esContra (tv l)))
+es l Sat = not (esContra (tv l))
 es l Fal = esFal (tv l)
 
-esTau :: TV -> Bool
+--De aquí hasta el ejercicio 2.4 se declaran funciones auxiliares para poder utilizar en la 2.3.
+--Dada una tv, evalua si es Tau
+esTau :: TV -> Bool 
 esTau [] = True
 esTau ((f,b):xs) = b && esTau xs
 
-esContraOFal :: TV -> Bool
-esContraOFal [] = True
-esContraOFal ((f,b):xs) = (not b) && esContraOFal xs
+--Dada una tv, evalua si es Contra
+esContra :: TV -> Bool
+esContra [] = True
+esContra ((f,b):xs) = (not b) && esContra xs
 
+--Dada una tv, evalua si es Sat
 esSat :: TV -> Bool
 esSat [] = False
 esSat ((f,b):xs) = b || esSat xs
 
+--Dada una tv, evalua si es Fal
 esFal :: TV -> Bool
 esFal [] = False
 esFal ((f,b):xs) = (not b) || esFal xs
@@ -155,15 +159,31 @@ esFal ((f,b):xs) = (not b) || esFal xs
 -- fc es tautologia
 -- fd es contradicción
 
--- Fórmulas del Lab1
--- (p ∧ ¬¬q)
--- (p ∧ ¬q ∧ ¬r)
--- (¬¬p ∨ ¬(q ∧ p))
--- ¬(r ⊃ r) ∧ (¬¬p ∨ ¬(q ∧ p))
 --2.5) 
 fnc :: L -> L
-fnc = undefined
+fnc l 
+      | (es l Tau) = l
+      | otherwise = crearConju (busquedaFalse (tv l))
 
+busquedaFalse :: TV -> TV
+busquedaFalse [] = []
+busquedaFalse ((f,b):ts) 
+      | b == True = busquedaFalse ts
+      | otherwise = (f,b):(busquedaFalse ts)
+
+crearDisyu :: Fila -> L
+crearDisyu ((v,b):[])
+      | b == False = (V v)
+      | otherwise = (Neg (V v))
+crearDisyu ((v,b):fs)
+      | b == False = Bin (V v) Or (crearDisyu fs)
+      | otherwise = Bin (Neg (V v)) Or (crearDisyu fs)
+
+crearConju :: TV -> L
+crearConju ((f,b):[]) = crearDisyu f
+crearConju ((f,b):ts) = Bin (crearDisyu f) And (crearConju ts)
+
+--Un test da fail y por lo que llegue a ver es por tema de eliminar implicaciones.
 
 ----------------------------------------------------------------------------------
 -- Pretty Printing (rudimentario)
