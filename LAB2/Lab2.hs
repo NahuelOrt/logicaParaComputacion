@@ -127,23 +127,39 @@ agregarVarNoRep (x:xs) y
 --2.3) -- Tau | Contra | Cont | Sat | Fal
 es :: L -> Clase -> Bool
 es l Tau = esTau (tv l)
-es l Contra = esContra (tv l)
+es l Contra = esContraOFal (tv l)
+es l Cont = (not (esTau (tv l))) && (not (esContraOFal (tv l)))
+es l Sat = not (esContraOFal (tv l))
+es l Fal = esFal (tv l)
 
 esTau :: TV -> Bool
 esTau [] = True
 esTau ((f,b):xs) = b && esTau xs
 
-esContra :: TV -> Bool
-esContra [] = True
-esContra ((f,b):xs) = (not b) && esContra xs
+esContraOFal :: TV -> Bool
+esContraOFal [] = True
+esContraOFal ((f,b):xs) = (not b) && esContraOFal xs
+
+esSat :: TV -> Bool
+esSat [] = False
+esSat ((f,b):xs) = b || esSat xs
+
+esFal :: TV -> Bool
+esFal [] = False
+esFal ((f,b):xs) = (not b) || esFal xs
 
 --2.4)
 -- Completar con tautología/contingencia/contradicción:
--- fa es ...
--- fb es ...
--- fc es ...
--- fd es ...
+-- fa es contingencia
+-- fb es contingencia
+-- fc es tautologia
+-- fd es contradicción
 
+-- Fórmulas del Lab1
+-- (p ∧ ¬¬q)
+-- (p ∧ ¬q ∧ ¬r)
+-- (¬¬p ∨ ¬(q ∧ p))
+-- ¬(r ⊃ r) ∧ (¬¬p ∨ ¬(q ∧ p))
 --2.5) 
 fnc :: L -> L
 fnc = undefined
