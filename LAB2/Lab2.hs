@@ -39,7 +39,7 @@ eval i (Bin l1 bc l2)
       | bc == And = (eval i l1) && (eval i l2)
       | bc == Or = (eval i l1) || (eval i l2)
       | bc == Imp = (eval i (Neg l1)) || (eval i l2)
-      | bc == Iff = (eval i l1) == (eval i l2)
+      | bc == Iff = (eval i l1) == (eval i l2) -- (¬A∧¬B)∨(A∧B) ((not (eval i l1)) && (not (eval i l2))) || (( (eval i l1)) && ((eval i l2)))
 
 --1.2)
 itodasverdaderas ::  Var -> Bool
