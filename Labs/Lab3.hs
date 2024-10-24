@@ -1,8 +1,8 @@
 
 module Lab3Solution where
 ------------------- Estudiante/s -------------------
--- Nombres y apellidos: 
--- Números: 
+-- Nombres y apellidos: Nahuel Pereyra
+-- Números: 254438
 ----------------------------------------------------
 
 import Prelude
@@ -33,8 +33,11 @@ data Tableau = Hoja I | Conj [L] Tableau | Dis [L] Tableau Tableau
 top = Bin (V "p") Or  (Neg $ V "p") 
 bot = Bin (V "p") And (Neg $ V "p") 
 
-pNotqOrq = Bin (Bin p And (Neg q)) Or q --(p ∧ ¬q) ∨ q)
-pNotqAndq = Bin (Bin p And (Neg q)) And q --(p ∧ ¬q) ∧ q)
+pAndNotqOrq = Bin (Bin p And (Neg q)) Or q --(p ∧ ¬q) ∨ q)
+pAndNotqAndq = Bin (Bin p And (Neg q)) And q --(p ∧ ¬q) ∧ q)
+pImpqImppImpp = Bin (Bin (Bin p Imp q) Imp p) Imp p -- (((p ⊃ q) ⊃ p) ⊃ p)
+eqImp = Bin (Neg (Bin (Neg (Bin (Neg p) Or q)) Or p)) Or p
+
 -- 1)
 -- Pre: recibe una lista de asignaciones de valores de verdad sobre variables
 -- Pos: retorna True si y solo si la lista es consistente, o sea representa una interpretación
@@ -48,6 +51,9 @@ esConsistente ((v,b):vs) = (not (elem (v, not b) vs)) && (esConsistente vs)
 int2f :: I -> L
 int2f i = conj (map lit2f i)
 
+int2fDisj :: I -> L
+int2fDisj i = disj (map lit2f i)
+
 lit2f :: Lit -> L
 lit2f (a,b) 
         | b = V a
@@ -57,6 +63,11 @@ conj :: [L] -> L
 conj [] = top
 conj [x] = x
 conj (x:xs) = Bin x And (conj xs)
+
+disj :: [L] -> L
+disj [] = top
+disj [x] = x
+disj (x:xs) = Bin x Or (disj xs)
 
 -- 3)
 -- Pre: recibe una fórmula f de LP
@@ -126,11 +137,15 @@ hojasFromT (Hoja i)
   | otherwise = []
 hojasFromT (Dis _ t1 t2) = (hojasFromT t1) ++ (hojasFromT t2)
 hojasFromT (Conj _ t1) = (hojasFromT t1)
+
 -- 6)
 -- Pre: recibe una fórmula f de LP
 -- Pos: retorna la clase semántica a la que pertenece f
 clasificar :: L -> Clase
-clasificar = undefined
+clasificar l 
+        | (not (sat (fnc (Neg l)))) = Tau
+        | (not (sat (fnc l))) = Contra
+        | otherwise = Cont
 
 -- 7)
 -- Pre: recibe una consecuencia
@@ -148,13 +163,31 @@ valida = undefined
 -- Pre: recibe una fórmula f de LP
 -- Pos: retorna f en FND
 fnd :: L -> L
-fnd = undefined
+fnd l = disj (map int2f (modelos l))
 
 -- 10)
 -- Pre: recibe una fórmula f de LP
 -- Pos: retorna f en FNC
 fnc :: L -> L
-fnc = undefined
+fnc l = conj (map int2fDisj (modelos l))    -- [I] -> [L]      int2fDisj I -> L           int2f I1,I2,I3
+
+
+
+formatL :: L -> L
+formatL (V x) = (V x)
+formatL (Neg l) = case l of{
+  (V x) -> Neg (V x);
+  (Neg l) -> formatL l;
+  (Bin l1 And l2) -> Bin (formatL (Neg l1)) Or (formatL (Neg l2));
+  (Bin l1 Or l2) -> Bin (formatL (Neg l1)) And (formatL (Neg l2));
+  (Bin l1 Imp l2) -> Bin (formatL l1) And (Neg (formatL l2));
+  (Bin l1 Iff l2) -> Bin (Bin (formatL (Neg l1)) Or (formatL (Neg l2))) And (Bin (formatL l1) Or (formatL l2));
+}
+formatL (Bin l1 bc l2) 
+      | bc == And = Bin (formatL l1) And (formatL l2)
+      | bc == Or = Bin (formatL l1) Or (formatL l2)
+      | bc == Imp = Bin (formatL (Neg l1)) Or (formatL l2)
+      | bc == Iff = Bin (Bin (formatL l1) And (formatL l2)) Or (Bin (formatL (Neg l1)) And (formatL (Neg l2)))
 
 
 ----------------------------------------------------------------------------------
