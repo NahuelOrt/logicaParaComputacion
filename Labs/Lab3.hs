@@ -101,7 +101,7 @@ allLit (x:xs) = False
 -- Pre: recibe una fórmula f de LP
 -- Pos: retorna True si y solo si f es sat
 sat :: L -> Bool
-sat = undefined
+sat f = not (null (modelos f))
  
 -- 5)
 -- Pre: recibe una fórmula f de LP
