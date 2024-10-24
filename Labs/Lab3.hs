@@ -33,6 +33,8 @@ data Tableau = Hoja I | Conj [L] Tableau | Dis [L] Tableau Tableau
 top = Bin (V "p") Or  (Neg $ V "p") 
 bot = Bin (V "p") And (Neg $ V "p") 
 
+pNotqOrq = Bin (Bin p And (Neg q)) Or q --(p ∧ ¬q) ∨ q)
+pNotqAndq = Bin (Bin p And (Neg q)) And q --(p ∧ ¬q) ∧ q)
 -- 1)
 -- Pre: recibe una lista de asignaciones de valores de verdad sobre variables
 -- Pos: retorna True si y solo si la lista es consistente, o sea representa una interpretación
@@ -107,8 +109,23 @@ sat = undefined
 -- Recomendación: para imprimirlos los modelos en lineas distintas:
 --                ghci> mapM_ print $ modelos f
 modelos :: L -> [I]
-modelos = undefined
+modelos f = nub (concatMap completar (hojasFromT (tableau f)))
+  where 
+    completar i = map sort [cf ++ i | cf <- combinaciones (faltantes f i)]
 
+faltantes :: L -> I -> [Var]
+faltantes f i = filter (\v -> lookup v i == Nothing) (vars f)
+
+combinaciones :: [Var] -> [I]
+combinaciones [] = [[]]
+combinaciones (v:vs) = [(v,b):cs | b <- [True, False], cs <- combinaciones vs]
+
+hojasFromT :: Tableau -> [I]
+hojasFromT (Hoja i)
+  | esConsistente i = [i]
+  | otherwise = []
+hojasFromT (Dis _ t1 t2) = (hojasFromT t1) ++ (hojasFromT t2)
+hojasFromT (Conj _ t1) = (hojasFromT t1)
 -- 6)
 -- Pre: recibe una fórmula f de LP
 -- Pos: retorna la clase semántica a la que pertenece f
