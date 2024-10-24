@@ -25,9 +25,10 @@ data BC = And | Or | Imp | Iff
 data Clase = Tau | Contra | Cont
   deriving (Show, Eq)
 
-data Consecuencia = [L] :|= L deriving (Show, Eq)  
+data Consecuencia = [L] :|= L 
+  deriving (Show, Eq)  
 
-data Tableau = Undefined   -- Completar!
+data Tableau = Hoja I | Conj [L] Tableau | Dis [L] Tableau Tableau
    
 top = Bin (V "p") Or  (Neg $ V "p") 
 bot = Bin (V "p") And (Neg $ V "p") 
@@ -36,19 +37,63 @@ bot = Bin (V "p") And (Neg $ V "p")
 -- Pre: recibe una lista de asignaciones de valores de verdad sobre variables
 -- Pos: retorna True si y solo si la lista es consistente, o sea representa una interpretación
 esConsistente :: I -> Bool
-esConsistente = undefined
+esConsistente [] = True
+esConsistente ((v,b):vs) = (not (elem (v, not b) vs)) && (esConsistente vs)
 
 -- 2)
 -- Pre: recibe una interpretación dada como lista de asignaciones (no vacía y consistente) 
 -- Pos: retorna la interpretación expresada como una conjunción de literales
 int2f :: I -> L
-int2f = undefined
+int2f i = conj (map lit2f i)
+
+lit2f :: Lit -> L
+lit2f (a,b) 
+        | b = V a
+        | otherwise = Neg (V a)
+
+conj :: [L] -> L
+conj [] = top
+conj [x] = x
+conj (x:xs) = Bin x And (conj xs)
 
 -- 3)
 -- Pre: recibe una fórmula f de LP
 -- Pos: retorna el tableau de f
 tableau :: L -> Tableau
-tableau = undefined
+tableau f = tableauRec [f]
+  where
+    tableauRec (x:xs) = case x of {
+      --Dis
+      Bin f1 Or f2 -> Dis (x:xs) (tableauRec (f1:xs)) (tableauRec (f2:xs));
+      Neg (Bin f1 And f2) -> Dis (x:xs) (tableauRec ((Neg f1):xs)) (tableauRec ((Neg f2):xs));
+      Bin f1 Imp f2 -> Dis (x:xs) (tableauRec ((Neg f1):xs)) (tableauRec (f2:xs));
+      Neg (Bin f1 Imp f2) -> Dis (x:xs) (tableauRec (f1:xs)) (tableauRec ((Neg f2):xs));
+      Bin f1 Iff f2 -> Dis (x:xs) (tableauRec ((f1):(f2):xs)) (tableauRec ((Neg f1):(Neg f2):xs));
+      Neg (Bin f1 Iff f2) -> Dis (x:xs) (tableauRec (f1:(Neg f2):xs)) (tableauRec ((Neg f1):f2:xs));
+      --Conj
+      Bin f1 And f2 -> Conj (x:xs) (tableauRec (f1:f2:xs));
+      Neg (Bin f1 Or f2) -> Conj (x:xs) (tableauRec ((Neg f1):(Neg f2):xs));
+      --Hoja
+      (V y) -> if (allLit xs) then (Hoja (map f2int ((V y):xs))) else (tableauRec ((fstNonLit xs):(V y):(xs \\ [fstNonLit xs])));
+      Neg (V y) -> if (allLit xs) then (Hoja (map f2int ((Neg (V y)):xs))) else (tableauRec ((fstNonLit xs):(Neg (V y)):(xs \\ [fstNonLit xs])));
+      Neg (Neg f1) -> tableauRec (f1:xs);
+    }
+
+f2int :: L -> Lit
+f2int (V x) = (x, True)
+f2int (Neg (V x)) = (x, False)
+
+fstNonLit :: [L] -> L
+fstNonLit [] = error "No existe"
+fstNonLit ((V _):fs) = fstNonLit fs
+fstNonLit ((Neg (V _)):fs) = fstNonLit fs
+fstNonLit (x:xs) = x
+
+allLit :: [L] -> Bool
+allLit [] = True
+allLit ((V _):fs) = allLit fs
+allLit ((Neg (V _)):fs) = allLit fs
+allLit (x:xs) = False
 
 -- 4)
 -- Pre: recibe una fórmula f de LP
